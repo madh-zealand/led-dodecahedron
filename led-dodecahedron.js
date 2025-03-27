@@ -101,7 +101,7 @@ edges.forEach(([v1, v2]) => {
 parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, 'https://wokwi.com');
 
 window.addEventListener('message', (event) => {
-  console.log(event.data);
+  
   if (event.data.neopixels) {
     const { neopixels } = event.data;
     for (let i = 0; i < neopixels.length; i++) {
@@ -113,6 +113,8 @@ window.addEventListener('message', (event) => {
         pixels[i].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
       }
     }
+  } else {
+    console.log(event);
   }
 });
 
