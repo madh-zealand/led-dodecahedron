@@ -101,6 +101,7 @@ edges.forEach(([v1, v2]) => {
 parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, 'https://wokwi.com');
 
 window.addEventListener('message', ({ data }) => {
+  console.log(data);
   if (data.neopixels) {
     const { neopixels } = data;
     for (let i = 0; i < neopixels.length; i++) {
@@ -122,4 +123,10 @@ spinButton.addEventListener('change', () => {
   } else {
     root.components.animation.pause();
   }
+});
+
+const button1 = document.getElementById("button1");
+button1.addEventListener("click", () => {
+  // Emulate physical button via Serial
+  parent.postMessage({ type: "serial", action: "input", data: "button1\n" }, "*");
 });
