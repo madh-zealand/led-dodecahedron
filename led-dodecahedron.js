@@ -100,10 +100,10 @@ edges.forEach(([v1, v2]) => {
 
 parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, 'https://wokwi.com');
 
-window.addEventListener('message', ({ data }) => {
-  console.log({data: data});
-  if (data.neopixels) {
-    const { neopixels } = data;
+window.addEventListener('message', (event) => {
+  console.log({event: event});
+  if (event.data.neopixels) {
+    const { neopixels } = event.data;
     for (let i = 0; i < neopixels.length; i++) {
       const value = neopixels[i];
       const b = value & 0xff;
