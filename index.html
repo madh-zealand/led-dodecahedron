@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3D LED Cube</title>
+    <title>3D LED Dodecahedron</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
     <script src="led-component.js"></script>
@@ -11,10 +11,10 @@
   <body>
     <a-scene>
       <a-entity
-        id="led-cube"
+        id="led-dodecahedron"
         position="0 1.2 -3"
         rotation="-90 0 0"
-        animation="property: rotation; to: -90 360 0; dur: 10000; loop: true; easing: linear"
+        animation="property: rotation; to: -90 360 0; dur: 20000; loop: true; easing: linear"
       ></a-entity>
       <a-sky color="black"></a-sky>
     </a-scene>
@@ -25,6 +25,6 @@
         Spin
       </label>
     </div>
-    <script src="led-cube.js"></script>
+    <script src="led-dodecahedron.js"></script>
   </body>
 </html>
