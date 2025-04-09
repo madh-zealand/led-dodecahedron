@@ -98,7 +98,7 @@ edges.forEach(([v1, v2]) => {
     }
 });
 
-parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, 'https://wokwi.com');
+parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, '*');
 
 window.addEventListener('message', (event) => {
   
