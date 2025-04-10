@@ -20,24 +20,26 @@ function clamp(n, min, max) {
 // ... rest of vertex and edge definitions remain the same ...
 
 // Message handling for multiple components
-window.addEventListener('message', ({ data }) => {
-  // Loop through all components specified in URL
-  for (const component of components) {
-    if (data[component] && data[component].pixels) {
-      const componentPixels = data[component].pixels;
-      
-      // Update LEDs for this component
-      for (let i = 0; i < componentPixels.length; i++) {
-        const value = componentPixels[i];
-        const b = value & 0xff;
-        const r = (value >> 8) & 0xff;
-        const g = (value >> 16) & 0xff;
-        if (pixels[i]) {
-          pixels[i].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
-        }
-      }
-    }
-  }
-});
+window.addEventListener('message', (event) => {
+    // Loop through all components specified in URL
+    for (const component of components) {
+     if (event.data[component] && event.data[component].pixels) {
+       const componentPixels = event.data[component].pixels;
+       
+       // Update LEDs for this component
+       for (let i = 0; i < componentPixels.length; i++) {
+         const value = componentPixels[i];
+         const b = value & 0xff;
+         const r = (value >> 8) & 0xff;
+         const g = (value >> 16) & 0xff;
+         if (pixels[i]) {
+           pixels[i].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
+         }
+       }
+     } else {
+       console.log(event);
+     }
+   }
+ });
 
 // ... rest of the code remains the same ... 

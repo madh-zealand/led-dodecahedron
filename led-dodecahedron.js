@@ -11,6 +11,7 @@ const pixels = [];
 const urlParams = new URL(location.href).searchParams;
 // Get components from URL parameter, default to 'neopixels' if not specified
 const components = urlParams.get('components')?.split(',') || ['neopixels'];
+console.log('Reading from components: ', components);
 
 function clamp(n, min, max) {
   return n < min ? min : n > max ? max : n;
@@ -114,7 +115,7 @@ window.addEventListener('message', (event) => {
         }
       }
     } else {
-      console.log(event);
+      console.log('Did not find component data in event: ', component, event);
     }
   }
 });
