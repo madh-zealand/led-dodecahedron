@@ -13,7 +13,9 @@ const ledsPerEdge = 8; // Number of LEDs per edge
 // Get components from URL parameter, default to 'neopixels' if not specified
 const urlParams = new URL(location.href).searchParams;
 const components = urlParams.get('components')?.split(',') || ['neopixels'];
-console.log('Reading from components: ', components);
+const isDebugging = urlParams.get('debug') === 'true';
+!isDebugging || console.log('Is debugging: ', isDebugging);
+!isDebugging || console.log('Reading from components: ', components);
 
 // ===== GEOMETRY DEFINITION =====
 // Golden ratio for proper dodecahedron proportions
@@ -63,7 +65,6 @@ const componentStartIndices = {}; // Store the starting index for each component
 
 // Calculate total number of LEDs
 const totalLeds = edges.length * ledsPerEdge;
-console.log(`Total LEDs: ${totalLeds}`);
 
 // ===== UI ELEMENTS =====
 // Create error message element
@@ -108,7 +109,7 @@ function createLEDs() {
     }
   });
   
-  console.log(`Created ${index} LEDs`);
+  !isDebugging || console.log(`Created ${index} LEDs`);
 }
 
 // ===== COMPONENT VALIDATION =====
@@ -124,7 +125,7 @@ function validateComponentData() {
     // Calculate total pixels from all components
     const totalComponentPixels = Object.values(componentPixelCounts).reduce((sum, count) => sum + count, 0);
     
-    console.log(`Total component pixels: ${totalComponentPixels}, Total LEDs: ${totalLeds}`);
+    !isDebugging || console.log(`Total component pixels: ${totalComponentPixels}, Total LEDs: ${totalLeds}`);
     
     // Check if the total matches
     if (totalComponentPixels !== totalLeds) {
@@ -164,7 +165,7 @@ function recalculateAllStartIndices() {
     if (componentStates[component]) {
       componentStartIndices[component] = currentIndex;
       currentIndex += componentStates[component].length;
-      console.log(`Component ${component} starts at index ${componentStartIndices[component]}`);
+      !isDebugging || console.log(`Component ${component} starts at index ${componentStartIndices[component]}`);
     }
   }
 }
@@ -193,19 +194,19 @@ function processMessageEvent(event) {
       if (!componentsReceived.has(component)) {
         newComponentsReceived = true;
         componentsReceived.add(component);
-        console.log(`First time receiving data for component: ${component}`);
+        !isDebugging || console.log(`First time receiving data for component: ${component}`);
       }
       
       // Mark this component as updated
       updatedComponents.add(component);
-      console.log(`Updated data for component: ${component} with ${componentPixels.length} pixels`);
+      //console.log(`Updated data for component: ${component} with ${componentPixels.length} pixels`);
     }
   }
   
   // If we've received all components at least once, recalculate start indices
   const allComponentsReceived = components.every(component => componentsReceived.has(component));
   if (allComponentsReceived && newComponentsReceived) {
-    console.log('All components received at least once, calculating start indices');
+    !isDebugging || console.log('All components received at least once, calculating start indices');
     recalculateAllStartIndices();
   }
   
@@ -279,19 +280,19 @@ button1.addEventListener("click", () => {
   parent.postMessage({ type: "serial", action: "input", data: "button1\n" }, "*");
 });
 
-this.dispatchEvent(
-  new MessageEvent("message", {
-    bubbles: true,
-    data: {
-      strip1: {
-        pixels: Array(80).fill(255),
-      },
-      strip2: {
-        pixels: Array(80).fill(0),
-      },
-      strip3: {
-        pixels: Array(80).fill(0),
-      },
-    },
-  }),
-);
+// this.dispatchEvent(
+//   new MessageEvent("message", {
+//     bubbles: true,
+//     data: {
+//       strip1: {
+//         pixels: Array(80).fill(255),
+//       },
+//       strip2: {
+//         pixels: Array(80).fill(0),
+//       },
+//       strip3: {
+//         pixels: Array(80).fill(0),
+//       },
+//     },
+//   }),
+// );
