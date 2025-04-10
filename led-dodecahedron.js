@@ -53,7 +53,7 @@ const edges = [
   // Side 1
   [12, 13], [13, 4], [13, 6], [6, 19], [6, 10], [10, 11], [10, 2], [2, 17], [2, 12], [12, 0],
   // Side 2
-  [5, 15], [15, 7], [15, 14], [14, 3], [14, 1], [1, 16], [1, 9], [9, 8], [9, 5], [18, 5],
+  [5, 15], [15, 7], [15, 14], [14, 3], [14, 1], [1, 16], [1, 9], [9, 8], [9, 5], [5, 18],
 ];
 
 const ledsPerEdge = 8;
@@ -64,7 +64,7 @@ edges.forEach(([v1, v2]) => {
     const [x2, y2, z2] = vertices[v2];
     
     for (let i = 0; i < ledsPerEdge; i++) {
-        const t = i / (ledsPerEdge - 1);
+        const t = (i + 1) / (ledsPerEdge - 1 + 2);
         const x = x1 + (x2 - x1) * t;
         const y = y1 + (y2 - y1) * t;
         const z = z1 + (z2 - z1) * t;
@@ -79,6 +79,19 @@ edges.forEach(([v1, v2]) => {
         pixels[index++] = led;
     }
 });
+
+// pixels[0].setAttribute('color', `rgb(255, 255, 255)`);
+// pixels[1].setAttribute('color', `rgb(255, 0, 0)`);
+// pixels[2].setAttribute('color', `rgb(0, 255, 0)`);
+// pixels[3].setAttribute('color', `rgb(0, 0, 255)`);
+// pixels[4].setAttribute('color', `rgb(255, 255, 255)`);
+// pixels[5].setAttribute('color', `rgb(200, 200, 200)`);
+// pixels[6].setAttribute('color', `rgb(150, 150, 150)`);
+// pixels[7].setAttribute('color', `rgb(100, 100, 100)`);
+
+// pixels[8].setAttribute('color', `rgb(0, 255, 255)`);
+// pixels[9].setAttribute('color', `rgb(255, 0, 255)`);
+// pixels[10].setAttribute('color', `rgb(255, 255, 0)`);
 
 parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, '*');
 

@@ -9,8 +9,8 @@
 (function () {
   const loader = new THREE.TextureLoader();
 
-  const ledTexture = loader.load('textures/led.png');
-  const glowTexture = loader.load('textures/led-glow.png');
+  const ledTexture = loader.load('textures/led.svg');
+  const glowTexture = loader.load('textures/led-glow.svg');
 
   AFRAME.registerComponent('led', {
     schema: {
@@ -39,7 +39,7 @@
       const sphere = new THREE.Mesh(geometry, this.sphereMaterial);
 
       const glow = new THREE.Sprite(this.glowMaterial);
-      glow.scale.set(2, 2, 2);
+      glow.scale.set(1.2, 1.2, 1.2);
 
       this.mesh = new THREE.Group();
       this.mesh.scale.set(0.1, 0.1, 0.1);
