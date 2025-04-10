@@ -61,8 +61,19 @@ const edges = [
 
 const ledsPerEdge = 8;
 
+// Store the last known state for each component
+const componentStates = {};
+
+// Create a mapping for each component to track which LED corresponds to which component pixel
+const componentMappings = {};
+
+// Initialize mappings for each component
+components.forEach(component => {
+  componentMappings[component] = [];
+});
+
 // Place LEDs along each edge
-edges.forEach(([v1, v2]) => {
+edges.forEach(([v1, v2], edgeIndex) => {
     const [x1, y1, z1] = vertices[v1];
     const [x2, y2, z2] = vertices[v2];
     
@@ -79,7 +90,21 @@ edges.forEach(([v1, v2]) => {
             z: z * scale
         });
         root.appendChild(led);
-        pixels[index++] = led;
+        pixels[index] = led;
+        
+        // Store the edge and position information for this LED
+        const ledInfo = {
+            edgeIndex,
+            positionInEdge: i,
+            globalIndex: index
+        };
+        
+        // For each component, store the mapping information
+        components.forEach(component => {
+            componentMappings[component].push(ledInfo);
+        });
+        
+        index++;
     }
 });
 
@@ -99,24 +124,66 @@ edges.forEach(([v1, v2]) => {
 parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, '*');
 
 window.addEventListener('message', (event) => {
-   // Loop through all components specified in URL
-   for (const component of components) {
+  // Track which components have been updated in this event
+  const updatedComponents = new Set();
+  
+  // Check if the event contains any of our components
+  for (const component of components) {
     if (event.data[component] && event.data[component].pixels) {
       const componentPixels = event.data[component].pixels;
       
-      // Update LEDs for this component
+      // Store the current state for this component
+      componentStates[component] = [...componentPixels];
+      
+      // Update LEDs for this component using the mapping
       for (let i = 0; i < componentPixels.length; i++) {
-        const value = componentPixels[i];
-        const b = value & 0xff;
-        const r = (value >> 8) & 0xff;
-        const g = (value >> 16) & 0xff;
-        if (pixels[i]) {
-          pixels[i].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
+        if (i < componentMappings[component].length) {
+          const ledInfo = componentMappings[component][i];
+          const ledIndex = ledInfo.globalIndex;
+          const value = componentPixels[i];
+          const b = value & 0xff;
+          const r = (value >> 8) & 0xff;
+          const g = (value >> 16) & 0xff;
+          
+          if (pixels[ledIndex]) {
+            pixels[ledIndex].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
+          }
         }
       }
-    } else {
-      console.log('Did not find component data in event: ', component, event);
+      
+      // Mark this component as updated
+      updatedComponents.add(component);
+      console.log(`Updated LEDs for component: ${component}`);
     }
+  }
+  
+  // Log which components were not in this event
+  const missingComponents = components.filter(c => !updatedComponents.has(c));
+  if (missingComponents.length > 0) {
+    console.log(`Event did not contain data for components: ${missingComponents.join(', ')}`);
+    
+    // Optionally, you could reapply the last known state for missing components
+    // This is commented out by default as it depends on your specific requirements
+    /*
+    for (const component of missingComponents) {
+      if (componentStates[component]) {
+        const componentPixels = componentStates[component];
+        for (let i = 0; i < componentPixels.length; i++) {
+          if (i < componentMappings[component].length) {
+            const ledInfo = componentMappings[component][i];
+            const ledIndex = ledInfo.globalIndex;
+            const value = componentPixels[i];
+            const b = value & 0xff;
+            const r = (value >> 8) & 0xff;
+            const g = (value >> 16) & 0xff;
+            if (pixels[ledIndex]) {
+              pixels[ledIndex].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
+            }
+          }
+        }
+      }
+    }
+    */
   }
 });
 
