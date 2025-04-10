@@ -62,6 +62,7 @@ const componentStates = {}; // Store the latest state for each component
 const componentPixelCounts = {}; // Track the number of pixels for each component
 const componentsReceived = new Set(); // Track which components have been received
 const componentStartIndices = {}; // Store the starting index for each component
+let validationComplete = false; // Track if validation has been completed
 
 // Calculate total number of LEDs
 const totalLeds = edges.length * ledsPerEdge;
@@ -121,7 +122,6 @@ function validateComponentData() {
   const allComponentsReceived = components.every(component => componentsReceived.has(component));
   
   if (allComponentsReceived) {
-    errorElement.style.display = 'none';
     // Calculate total pixels from all components
     const totalComponentPixels = Object.values(componentPixelCounts).reduce((sum, count) => sum + count, 0);
     
@@ -137,10 +137,13 @@ function validateComponentData() {
       errorElement.style.display = 'block';
       
       // Log component details
-      console.log('Component pixel counts:', componentPixelCounts);
+      !isDebugging || console.log('Component pixel counts:', componentPixelCounts);
+    
     } else {
       // Hide error message if counts match
       errorElement.style.display = 'none';
+      // Mark validation as complete
+      validationComplete = true;
     }
   } else {
     // Show error message on screen
@@ -208,13 +211,18 @@ function processMessageEvent(event) {
   if (allComponentsReceived && newComponentsReceived) {
     !isDebugging || console.log('All components received at least once, calculating start indices');
     recalculateAllStartIndices();
+    
+    // Validate component data only once when all components are received
+    if (!validationComplete) {
+      validateComponentData();
+    }
+  } else if (newComponentsReceived && !validationComplete) {
+    // If we received new components but not all yet, update the waiting message
+    validateComponentData();
   }
   
   // Update all pixels based on the latest component data
   updateAllPixels();
-  
-  // Validate component data after each update
-  validateComponentData();
 }
 
 /**
