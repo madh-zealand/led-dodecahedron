@@ -9,6 +9,8 @@ const root = document.getElementById('led-dodecahedron');
 const pixels = [];
 
 const urlParams = new URL(location.href).searchParams;
+// Get components from URL parameter, default to 'neopixels' if not specified
+const components = urlParams.get('components')?.split(',') || ['neopixels'];
 
 function clamp(n, min, max) {
   return n < min ? min : n > max ? max : n;
@@ -96,20 +98,24 @@ edges.forEach(([v1, v2]) => {
 parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, '*');
 
 window.addEventListener('message', (event) => {
-  
-  if (event.data.neopixels) {
-    const { neopixels } = event.data;
-    for (let i = 0; i < neopixels.length; i++) {
-      const value = neopixels[i];
-      const b = value & 0xff;
-      const r = (value >> 8) & 0xff;
-      const g = (value >> 16) & 0xff;
-      if (pixels[i]) {
-        pixels[i].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
+   // Loop through all components specified in URL
+   for (const component of components) {
+    if (event.data[component] && event.data[component].pixels) {
+      const componentPixels = event.data[component].pixels;
+      
+      // Update LEDs for this component
+      for (let i = 0; i < componentPixels.length; i++) {
+        const value = componentPixels[i];
+        const b = value & 0xff;
+        const r = (value >> 8) & 0xff;
+        const g = (value >> 16) & 0xff;
+        if (pixels[i]) {
+          pixels[i].setAttribute('color', `rgb(${r}, ${g}, ${b})`);
+        }
       }
+    } else {
+      console.log(event);
     }
-  } else {
-    console.log(event);
   }
 });
 
